@@ -51,6 +51,7 @@ class Hunter:
         self.attack += 1
 
 # Now we'll have a simple endMystery function for when the mystery ends. Still need to implement deleting the completed Mystery from the mystery list. 
+# Maybe put this in the mysteries section??? 
 
     def endMystery(self):
         print("""
@@ -125,8 +126,8 @@ class Spooky(Hunter):
         }
         self.description = "The Spooky: A purveyor of strange powers which aren't entirely under their control. The weirdest of the bunch."
 
-def main():
-    firstWelcomeMessage = """
+def playMotW():
+    print("""
     Welcome, hunter. Each week, you'll embark on a new mystery.
     If you've never played MotW before, don't worry. You'll catch on quick. 
     You play a Hunter with Ratings that describe them and that you use for Moves. 
@@ -138,10 +139,10 @@ def main():
     Moves will have their associated rating next to them in parentheses.  
     It's a strange world out there. I hope you're ready.
                         Good hunting.
-    """
-    print(firstWelcomeMessage)
+    """)
 
-# "As a user, I should be able to choose a Hero and give it a name"
+# This is the character creation section. It covers the following two instructions: 
+# "As a user, I should be able to choose a Hero and give it a name" and "As a user, I should be able to choose a Hero and see my ratings (health,attack, etc)"
     readyToHunt = False
     while readyToHunt != True: # Keeps looping until the player is ready. 
         playerName = input("Enter your Hunter's name: \n")
@@ -163,23 +164,28 @@ def main():
             playerHunter = Professional(playerName)
         if playbook == '5':
             playerHunter = Spooky(playerName)
-
-        print(f"""You've chosen {playerHunter.name}, who plays the role of {playerHunter.description}.
-            Your ratings are {playerHunter.ratings}. 
-            You'll start with offensive capabilities that do {playerHunter.attack} Harm, whether by magic or weapon.
-            You'll start with armor which reduces all Harm you take by {playerHunter.armor}. Don't worry, we'll get you a flak vest later.""")
-        if input("If you're ready to hunt, press (y). Hit any other key to respec your Hunter.") == 'y':
-            readyToHunt = True
         
+        try: # doing a try statment so that I can write an error code
+            print(f"""You've chosen {playerHunter.name}, who plays the role of {playerHunter.description}.
+                Your ratings are {playerHunter.ratings}. 
+                You'll start with offensive capabilities that do {playerHunter.attack} Harm, whether by magic or weapon.
+                You'll start with armor which reduces all Harm you take by {playerHunter.armor}. Don't worry, we'll get you a flak vest later.""")
+            if input("If you're ready to hunt, press (y). Hit any other key to respec your Hunter.") == 'y':
+                readyToHunt = True
+        except:
+            print("Choice not found. Try entering your Hunter's information again.")
 
+# OK, now we can finally actually play! This is the Mysteries section. 
+    hunting = True
+    while hunting == True: # we gotta stop it somehow
+        mysteriesList = ["Enter the number associated with the Mystery you'd like to investigate."]
 
-# As a user, I should be able to choose a Hero and see my ratings (health,attack, etc)
 # As a user, I should be able to immediately fight a villain
 # As a user, I should be able to choose an action from a menu that is printed
 # As a user, I should be able to view this menu by calling a function
 # As a user, I should be able to have the game quit if I reach 0 health or the enemy reaches 0 health
 
-    mysteriesList = ["Enter the number associated with the Mystery you'd like to investigate."]
+    
 
 # Extra Challenge
 # As a user, I should be able to run away and avoid the monster
@@ -190,4 +196,4 @@ def main():
 
     basicMovesList = ["Which move would you like to use? \n 1. Kick Some Ass! (Tough) \n 2. Run away with Act Under Pressure (Cool) \n"] 
 
-main()
+playMotW()
