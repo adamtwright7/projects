@@ -1,6 +1,6 @@
 ## Herein lies the basic Hunter class. My goal is for this class to handle most everything. 
 class Hunter:
-    def __init__(self, name, ratings = 0, description = 0, attack = 2, armor = 0, harm = 0): # Harm counts up to 7; more harm is worse.
+    def __init__(self, name, ratings = {}, description = '', attack = 2, armor = 0, harm = 0): # Harm counts up to 7; more harm is worse.
         self.name = name
         self.ratings = {
             'Charm':0,
@@ -55,6 +55,15 @@ class Hunter:
     def attackUpgrade(self):
         self.attack += 1
 
+    # gear check. Will print all the important stuff. 
+    def gearCheck(self):
+        print(f"""
+Alright {self.name}, your Ratings looks like this: {self.ratings}
+and you're at {self.harm} Harm. You die at 7. 
+You have the capacity to deal {self.attack} Harm, 
+and your armor subtracts {self.armor} Harm from any hit you take. 
+Remember, you're playing {self.description} 
+""")
 
 # subclasses for 5 select Playbooks. The only thing that's different is the rating array. 
 # I'll increase armor/attacks as rewards for investigating during the game. Harm will be healed at the end of each Mystery. 
@@ -138,11 +147,11 @@ class Mystery:
     def startingMessage(self): # this kicks off the Mystery and handles any investigation
         print(self.enteringTown)
         startingChoice = input("""
-        What would you like to do? 
-            1. Investigate further by rolling Sharp. 
-            2. Ask around by rolling Charm. 
-            3. Charge right into danger. 
-        """)
+What would you like to do? 
+        1. Investigate further by rolling Sharp. 
+        2. Ask around by rolling Charm. 
+        3. Charge right into danger. 
+""")
 
         if startingChoice == "1":
             print(self.investigationPrompt)
@@ -234,7 +243,8 @@ for a total of {self.PC.attack + 1}, but still suffer the monster's normal {self
                 self.PC.attackUpgrade 
                 print(f"You can now deal {self.PC.attack} Harm.")
             
-            print("""Good work. You've survived another week.
+            print("""
+Good work. You've survived another week.
 You can take some time to rest. Your Harm has been reset to 0.
 You've also leveled up! You can increase one of your Ratings by 1.""")
             self.PC.resetHarm()
@@ -247,39 +257,40 @@ You've also leveled up! You can increase one of your Ratings by 1.""")
 # Mystery subclasses! These contain the flavortext and monster stats for different Mysteries. 
 
 class DreamAwayTheTime(Mystery):
-    def __init__(self, PC, enteringTown, investigationPrompt, goodInv, badInv, lesserHarm, confrontationPrompt, monsterHarm, monsterHealth, victory):
+    def __init__(self, PC, enteringTown = '', investigationPrompt = '', goodInv = '', badInv = '', lesserHarm = 0, confrontationPrompt = '', monsterHarm = 0, monsterHealth = 0, victory = ''):
         super().__init__(PC, enteringTown, investigationPrompt, goodInv, badInv, lesserHarm, confrontationPrompt, monsterHarm, monsterHealth, victory)
         
-        enteringTown = """
+        self.enteringTown = """
 A long road leads into the small town of Handfast. After a short talk with the sheriff, 
 you've reviewed security footage and found that whatever is responsible for the nighttime attacks 
 only shows up as a dark blob on the tapes. Even more worrying, his records indicate a child goes 
 missing from the town every 40 years, to the date. This cycles's date was three days ago, 
 when the attacks began, but no child has yet gone missing."""
         
-        investigationPrompt = """
+        self.investigationPrompt = """
 At the town playground, you spy a girl watching from afar. She idles at the treeline, watching the other kids play.
 The sunset glints off a short dagger as her hands twirl it. A cloak over her dress is interwoven with violets."""
         
-        goodInv = """
+        self.goodInv = """
 You have a pleasant chat with the girl, Violet. She tells you that she has enjoyed the last 40 years with Oberon,
 the king of faeries, in his timeless realm. He's brought a brutish creature, a Redcap named Bonecruncher,
-to steal away the town's favorite child per a centuries-old fey pact. She tells you where Bonecruncher will next attack." 
+to steal away the town's favorite child per a centuries-old fey pact. 
+She tells you where Bonecruncher will next attack.
 
 You make preparations for the redcap's rage. His Harm capacity has been halved for the final showdown. Get ready."""
 
-        badInv = """
+        self.badInv = """
 You try to look into the dagger-clutching girl. She ducks into the woods as you follow. 
 A dagger slashes across your side. You take 1 Harm. You awake hours later,
 your memory still foggy, and stumble into town under a dark sky."""
 
-        lesserHarm = 1 
-        confrontationPrompt = """
+        self.lesserHarm = 1 
+        self.confrontationPrompt = """
 A massive fey creature beneath a woolen cap dripping with blood charges into the town street!"""
 
-        monsterHarm = 2
-        monsterHealth = 9
-        victory = """
+        self.monsterHarm = 2
+        self.monsterHealth = 9
+        self.victory = """
 Bonecruncher is defeated! You renegotiate the terms of Oberon's old bargain with the town. 
 Violet returns to the fey realm, which is now more her home than Handfast. She leaves you with a gift.
 
@@ -290,18 +301,18 @@ class DamnDirtyApes(Mystery):
     def __init__(self, PC, enteringTown, investigationPrompt, goodInv, badInv, lesserHarm, confrontationPrompt, monsterHarm, monsterHealth, victory):
         super().__init__(PC, enteringTown, investigationPrompt, goodInv, badInv, lesserHarm, confrontationPrompt, monsterHarm, monsterHealth, victory)
         
-        enteringTown = """
+        self.enteringTown = """
 Welcome to Pittsburg State University, home of the gorillas! Around campus are strung graduation banners 
 -- and webs of police tape. Tall, concrete collumns release steam into the air."""
         
-        investigationPrompt = """
+        self.investigationPrompt = """
 Claire Guimaras, the local police chief, commands detectives and crime scene cleaners. 
 She explains that long primate hairs have been found at the scene of the murder and all of the lab break-ins. 
 In all cases, the perpetrator also broke grates that cover the air vents that connect to the expansive network
 of steam tunnels beneath campus. Chief Guimaras has one main suspect: Robin Harding, 
 the head of the student group that calls themselves the Animal Freedom Militia."""
         
-        goodInv = """
+        self.goodInv = """
 You find that Robin is happy about the released primates, but not responsible. 
 She clues you in on her main suspect: Dr. Lawrence Beech, an infamous professor on campus
 whose experiments with primates had to be stopped by his peers. Though he somehow has tenure,
@@ -310,20 +321,20 @@ Local legend is that he has a secret lab in the steam tunnels under campus.
 
 You head into the steam tunnels, ready and equipped."""
 
-        badInv = """
+        self.badInv = """
 As you creep about one of the trashed labs, echoing monkey calls approach through the vents.
 Robo-monkeys hop into the lab! Shoulder-mounted rail guns launch refuse at you.
 Grappling hooks launch from where chimp arms should be, and you're dragged into the steam tunnels. You take 2 Harm."""
 
-        lesserHarm = 2 
-        confrontationPrompt = """
+        self.lesserHarm = 2 
+        self.confrontationPrompt = """
 Through the dark steam below campus is a cluttered lab stacked high with prosthetic limbs, primate parts,
 and strange chrome weaponry. A wild-eyed, balding professor raises up a laser gun and aims it at you!
 Then rants about his evil plans to take over campus for a while. Then the laser begins to charge!"""
 
-        monsterHarm = 4
-        monsterHealth = 6
-        victory = """
+        self.monsterHarm = 4
+        self.monsterHealth = 6
+        self.victory = """
 Dr. Beech screams with the rage of a nerd scorned! Now he'll never complete his research or be dean! 
 But the primates are released for rehabilitation with the Animal Freedom Militia, 
 and Beech is hidden away from the world by whatever shadowy organization you work for. 
@@ -374,10 +385,13 @@ What kind of Hunter would you like to be?
             playerHunter = Spooky(playerName)
         
         try: # doing a try statment so that I can write an error code
-            print(f"""You've chosen {playerHunter.name}, who plays the role of {playerHunter.description}.
-                Your ratings are {playerHunter.ratings}. 
-                You'll start with offensive capabilities that do {playerHunter.attack} Harm, whether by magic or weapon.
-                You'll start with armor which reduces all Harm you take by {playerHunter.armor}. Don't worry, we'll get you a flak vest later.""")
+            print(f"""
+You've chosen {playerHunter.name}, 
+who plays the role of {playerHunter.description}
+Your ratings are {playerHunter.ratings}. 
+You'll start with offensive capabilities that do {playerHunter.attack} Harm, whether by magic or weapon.
+You'll start with armor which reduces all Harm you take by {playerHunter.armor}. 
+Don't worry, we'll get you a flak vest later.""")
             if input("If you're ready to hunt, press (y). Hit any other key to respec your Hunter.") == 'y':
                 readyToHunt = True
         except:
@@ -387,28 +401,36 @@ What kind of Hunter would you like to be?
     hunting = True
     completedMysteries = [] # this will track which mysteries are completed so they can't be replayed. 
     while (hunting == True) and (playerHunter.harm < 7): # we gotta stop it somehow
-        mainMenu = """Enter the number associated with the Mystery you'd like to investigate.
-        If you'd like to retire your Hunter to safety, enter any other key or 0. 
+        mainMenu = """
+Enter the number associated with the Mystery you'd like to investigate.
+Easiest Mysteries are listed first. You can't investigate a Mystery twice. 
+Enter 9 to check your gear. 
+If you'd like to retire your Hunter to safety, enter any other key or 0. 
 
-        1. Investigate strange weather events, household inconveniences, 
-        and worrisome nighttime attacks in the small town of Handfast. 
+1. Investigate strange weather events, household inconveniences, 
+and worrisome nighttime attacks in the small town of Handfast. 
 
-        2. A college town has been suffering from a spate of burglaries of its labs. Complex medical devices and 
-        primates have both been stolen. Now a security guard was torn to pieces a few days ago. 
+2. A college town has been suffering from a spate of burglaries of its labs. Complex medical devices and 
+primates have both been stolen. Now a security guard was torn to pieces a few days ago. 
 
-        0. Retire to safety. (Quit the game.)
-        """
+9. Check your gear. 
+
+0. Retire to safety. (Quit the game.)
+"""
         mainMenuChoice = input(mainMenu)
         if mainMenuChoice == '1':
             mystery = DreamAwayTheTime(playerHunter)
+            mystery.startingMessage()
         elif mainMenuChoice == '2':
             mystery = DamnDirtyApes(playerHunter)
+            mystery.startingMessage()
+        elif mainMenuChoice == '9':
+            playerHunter.gearCheck()
         else:
             print(f"""
 Congratulations, {playerHunter.name}. You've retired to safety. 
 And who knows? One day a young Hunter may need your expertise.""")
             hunting = False 
-        
-        mystery.startingMessage
 
 playMotW()
+
