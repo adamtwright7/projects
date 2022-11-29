@@ -153,6 +153,7 @@ What would you like to do?
         1. Investigate further by rolling Sharp. 
         2. Ask around by rolling Charm. 
         3. Charge right into danger. 
+        9. Check your gear. 
 """)
 
         if startingChoice == "1":
@@ -168,7 +169,7 @@ What would you like to do?
             if sharpResult < 7:
                 print("Your investigation has been a failure.")
                 print(self.badInv)
-                self.PC.harm -= self.lesserHarm
+                self.PC.takeDamage(self.lesserHarm)
             else:
                 print("Your investigation has been a success.")
                 print(self.goodInv)
@@ -192,30 +193,42 @@ What would you like to do?
             else:
                 print("Your investigation has been a success.")
                 print(self.goodInv)
-                self.monsterHealth = int(self.monsterHealth/2)
+                self.monsterHealth = int(self.monsterHealth/2) # rounds down. I'm fine with that. 
             self.bigBattle()
         
         if startingChoice == '3':
             self.bigBattle()
+        if startingChoice == '9':
+            self.PC.gearCheck()
     
     def bigBattle(self): # This handles the big battle between the player's Hunter and the titular Monster of the Week
         print(self.confrontationPrompt)
         battleMenu = """The battle continues! What's next?
             1. Pull out your weapon and Kick Some Ass by rolling Tough.
             2. Focus your energy into harming the monster by rolling Weird. 
-            3. Get out of here by rolling Cool. \n"""
-        while (self.PC.harm < 7) and (self.monsterHealth > 0):
+            3. Get out of here by rolling Cool. 
+            9. Quickly check your gear. \n"""
+        runningAway = False 
+        while (self.PC.harm < 7) and (self.monsterHealth > 0) and (runningAway == False):
             battleChoice = input(battleMenu)
-            
+            firstDie = random.randint(1,6)
+            secondDie = random.randint(1,6)
             if battleChoice == '3':
-                print("""You've survived another day, but left others to deal with the monster. 
+                fleeResult = firstDie + secondDie + self.PC.ratings["Cool"] 
+                print(f"""You rolled {firstDie} + {secondDie} + your Cool rating, {self.PC.ratings["Cool"]}.
+That's a total of {fleeResult}.""")
+                if fleeResult >= 7:
+                    print("""You've survived another day, but left others to deal with the monster. 
 Get back to base and take some time to rest. Your Harm has been reset to 0.
 """)
-                self.PC.resetHarm() 
-                break 
-            else: # this is all the battle stuff 
-                firstDie = random.randint(1,6)
-                secondDie = random.randint(1,6)
+                    self.PC.resetHarm() 
+                    runningAway = True 
+                else:
+                    print(f"The monster drags you back! You take {self.monsterHarm - 1} Harm.")
+                    self.PC.takeDamage(self.monsterHarm - 1) 
+            elif battleChoice == '9': # This needs to be an else-if. Otherwise, I go into the battle area when 9 is selected.
+                self.PC.gearCheck()
+            else: # this is all the battle stuff. 1 and 2 both share the same results. 
                 if battleChoice == '1':
                     battleResult = firstDie + secondDie + self.PC.ratings["Tough"] 
                     print(f"""You rolled {firstDie} + {secondDie} + your Tough rating, {self.PC.ratings["Tough"]}. 
@@ -260,7 +273,7 @@ You've also leveled up! You can increase one of your Ratings by 1.""")
 
 # the else-if statement here means that if you tie -- kill the monster but also die -- it counts as a win.         
         elif self.PC.harm >= 7: 
-            print("Other Hunters may arise in your stead...")
+            print(f"Sorry, {self.PC.name}. Other Hunters may arise in your stead...")
 
 # Mystery subclasses! These contain the flavortext and monster stats for different Mysteries. 
 
@@ -400,7 +413,7 @@ Your ratings are {playerHunter.ratings}.
 You'll start with offensive capabilities that do {playerHunter.attack} Harm, whether by magic or weapon.
 You'll start with armor which reduces all Harm you take by {playerHunter.armor}. 
 Don't worry, we'll get you a flak vest later.""")
-            if input("If you're ready to hunt, enter 'y'. Hit any other key to respec your Hunter. \n") == 'y':
+            if input("If you're ready to hunt, enter 'y'. Enter any other key to respec your Hunter. \n") == 'y':
                 readyToHunt = True
         except:
             print("Choice not found. Try entering your Hunter's information again.")
@@ -412,7 +425,7 @@ Don't worry, we'll get you a flak vest later.""")
         mainMenu = """
 Welcome back to base, Hunter! 
 Enter the number associated with the Mystery you'd like to investigate.
-Easiest Mysteries are listed first. You can't investigate a Mystery twice. 
+Easiest Mysteries are listed first. You can investigate a Mystery twice, but it's less fun that way. 
 Enter 9 to check your gear. 
 If you'd like to retire your Hunter to safety, enter any other key or 0. 
 
