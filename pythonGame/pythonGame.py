@@ -19,7 +19,9 @@ class Hunter:
         if trueDamage > 0:
             self.harm = self.harm + trueDamage 
         if self.harm >= 7:
-            print(f"Your Hunter, {self.name} has died. Better luck next time.")
+            print(f"""Your Hunter, {self.name} has been knocked out. You'll bleed out soon,
+but if the monster's dead, you'll be healed up and sent back to base.
+""")
         else:
             print(f"That's gonna leave a mark, but you'll be fine. You're at {self.harm} Harm.")
 
@@ -170,6 +172,7 @@ What would you like to do?
             else:
                 print("Your investigation has been a success.")
                 print(self.goodInv)
+                self.monsterHealth = int(self.monsterHealth/2)
             self.bigBattle()
 
         if startingChoice == "2":
@@ -189,6 +192,7 @@ What would you like to do?
             else:
                 print("Your investigation has been a success.")
                 print(self.goodInv)
+                self.monsterHealth = int(self.monsterHealth/2)
             self.bigBattle()
         
         if startingChoice == '3':
@@ -199,12 +203,16 @@ What would you like to do?
         battleMenu = """The battle continues! What's next?
             1. Pull out your weapon and Kick Some Ass by rolling Tough.
             2. Focus your energy into harming the monster by rolling Weird. 
-            3. Get out of here by rolling Cool."""
+            3. Get out of here by rolling Cool. \n"""
         while (self.PC.harm < 7) and (self.monsterHealth > 0):
             battleChoice = input(battleMenu)
             
             if battleChoice == '3':
-                pass # integrate running away here 
+                print("""You've survived another day, but left others to deal with the monster. 
+Get back to base and take some time to rest. Your Harm has been reset to 0.
+""")
+                self.PC.resetHarm() 
+                break 
             else: # this is all the battle stuff 
                 firstDie = random.randint(1,6)
                 secondDie = random.randint(1,6)
@@ -237,15 +245,15 @@ for a total of {self.PC.attack + 1}, but still suffer the monster's normal {self
             print(f"{self.victory}")
             lootChoice = input("What would you like to take?")
             if lootChoice == '1': # 1 will always be armor, 2 will be attack 
-                self.PC.armorUpgrade 
+                self.PC.armorUpgrade()
                 print(f"You now have {self.PC.armor} armor. All Harm taken will be reduced by {self.PC.armor}.")
             if lootChoice == '2':
-                self.PC.attackUpgrade 
+                self.PC.attackUpgrade() 
                 print(f"You can now deal {self.PC.attack} Harm.")
             
             print("""
 Good work. You've survived another week.
-You can take some time to rest. Your Harm has been reset to 0.
+Get back to base and take some time to rest. Your Harm has been reset to 0.
 You've also leveled up! You can increase one of your Ratings by 1.""")
             self.PC.resetHarm()
             self.PC.ratingIncrease()
@@ -298,7 +306,7 @@ Violet returns to the fey realm, which is now more her home than Handfast. She l
 2. Take the enchantment of Violet's dagger (deal +1 Harm)."""
 
 class DamnDirtyApes(Mystery):
-    def __init__(self, PC, enteringTown, investigationPrompt, goodInv, badInv, lesserHarm, confrontationPrompt, monsterHarm, monsterHealth, victory):
+    def __init__(self, PC, enteringTown = '', investigationPrompt = '', goodInv = '', badInv = '', lesserHarm = 0, confrontationPrompt = '', monsterHarm = 0, monsterHealth = 0, victory = ''):
         super().__init__(PC, enteringTown, investigationPrompt, goodInv, badInv, lesserHarm, confrontationPrompt, monsterHarm, monsterHealth, victory)
         
         self.enteringTown = """
@@ -319,7 +327,7 @@ whose experiments with primates had to be stopped by his peers. Though he someho
 he hasn't been seen in a couple days, and reportedly didn't give his finals this year.
 Local legend is that he has a secret lab in the steam tunnels under campus. 
 
-You head into the steam tunnels, ready and equipped."""
+You head into the steam tunnels, ready and equipped. The professor's harm capacity has been halved."""
 
         self.badInv = """
 As you creep about one of the trashed labs, echoing monkey calls approach through the vents.
@@ -392,7 +400,7 @@ Your ratings are {playerHunter.ratings}.
 You'll start with offensive capabilities that do {playerHunter.attack} Harm, whether by magic or weapon.
 You'll start with armor which reduces all Harm you take by {playerHunter.armor}. 
 Don't worry, we'll get you a flak vest later.""")
-            if input("If you're ready to hunt, press (y). Hit any other key to respec your Hunter.") == 'y':
+            if input("If you're ready to hunt, enter 'y'. Hit any other key to respec your Hunter. \n") == 'y':
                 readyToHunt = True
         except:
             print("Choice not found. Try entering your Hunter's information again.")
@@ -402,6 +410,7 @@ Don't worry, we'll get you a flak vest later.""")
     completedMysteries = [] # this will track which mysteries are completed so they can't be replayed. 
     while (hunting == True) and (playerHunter.harm < 7): # we gotta stop it somehow
         mainMenu = """
+Welcome back to base, Hunter! 
 Enter the number associated with the Mystery you'd like to investigate.
 Easiest Mysteries are listed first. You can't investigate a Mystery twice. 
 Enter 9 to check your gear. 
