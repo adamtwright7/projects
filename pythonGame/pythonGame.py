@@ -146,14 +146,13 @@ class Mystery:
         self.monsterHealth = monsterHealth
         self.victory = victory
 
-    def startingMessage(self): # this kicks off the Mystery and handles any investigation
-        print(self.enteringTown)
+    def investigationStage(self): # this kicks off the Mystery and handles any investigation
         startingChoice = input("""
 What would you like to do? 
         1. Investigate further by rolling Sharp. 
         2. Ask around by rolling Charm. 
         3. Charge right into danger. 
-        9. Check your gear. 
+        9 (or any other number). Check your gear. 
 """)
 
         if startingChoice == "1":
@@ -176,7 +175,7 @@ What would you like to do?
                 self.monsterHealth = int(self.monsterHealth/2)
             self.bigBattle()
 
-        if startingChoice == "2":
+        elif startingChoice == "2":
             print(self.investigationPrompt)
             firstDie = random.randint(1,6)
             secondDie = random.randint(1,6)
@@ -189,17 +188,18 @@ What would you like to do?
             if charmResult < 7:
                 print("Your investigation has been a failure.")
                 print(self.badInv)
-                self.PC.harm -= self.lesserHarm
+                self.PC.takeDamage(self.lesserHarm)
             else:
                 print("Your investigation has been a success.")
                 print(self.goodInv)
                 self.monsterHealth = int(self.monsterHealth/2) # rounds down. I'm fine with that. 
             self.bigBattle()
         
-        if startingChoice == '3':
+        elif startingChoice == '3':
             self.bigBattle()
-        if startingChoice == '9':
+        else:
             self.PC.gearCheck()
+            self.investigationStage()
     
     def bigBattle(self): # This handles the big battle between the player's Hunter and the titular Monster of the Week
         print(self.confrontationPrompt)
@@ -207,7 +207,7 @@ What would you like to do?
             1. Pull out your weapon and Kick Some Ass by rolling Tough.
             2. Focus your energy into harming the monster by rolling Weird. 
             3. Get out of here by rolling Cool. 
-            9. Quickly check your gear. \n"""
+            9 (or any other key). Quickly check your gear. \n"""
         runningAway = False 
         while (self.PC.harm < 7) and (self.monsterHealth > 0) and (runningAway == False):
             battleChoice = input(battleMenu)
@@ -226,9 +226,8 @@ Get back to base and take some time to rest. Your Harm has been reset to 0.
                 else:
                     print(f"The monster drags you back! You take {self.monsterHarm - 1} Harm.")
                     self.PC.takeDamage(self.monsterHarm - 1) 
-            elif battleChoice == '9': # This needs to be an else-if. Otherwise, I go into the battle area when 9 is selected.
-                self.PC.gearCheck()
-            else: # this is all the battle stuff. 1 and 2 both share the same results. 
+
+            elif (battleChoice == '1') or (battleChoice == '2'): # this is all the battle stuff. 1 and 2 both share the same results. 
                 if battleChoice == '1':
                     battleResult = firstDie + secondDie + self.PC.ratings["Tough"] 
                     print(f"""You rolled {firstDie} + {secondDie} + your Tough rating, {self.PC.ratings["Tough"]}. 
@@ -252,11 +251,13 @@ for a total of {self.PC.attack + 1}, but still suffer the monster's normal {self
                 else:
                     print(f"Advanced success. You deal {self.PC.attack} to the monster and suffer no Harm at all!")
                     self.monsterHealth -= self.PC.attack 
+            else: 
+                self.PC.gearCheck()
         
         # victory stuff 
         if self.monsterHealth < 1: 
             print(f"{self.victory}")
-            lootChoice = input("What would you like to take?")
+            lootChoice = input("What would you like to take? \n")
             if lootChoice == '1': # 1 will always be armor, 2 will be attack 
                 self.PC.armorUpgrade()
                 print(f"You now have {self.PC.armor} armor. All Harm taken will be reduced by {self.PC.armor}.")
@@ -362,8 +363,115 @@ and Beech is hidden away from the world by whatever shadowy organization you wor
 After a few years out of the publish-or-perish mindset, 
 he comes back to his senses (and morals) and is able to replicate some of his research for you. 
 
-1. Take some chrome armor from Dr. Beech's lab (+1 harm) 
-2. Take some weird etheric-bionic lazer thing (+1 attack)
+1. Take some chrome armor from Dr. Beech's lab (gain +1 armor) 
+2. Take some weird etheric-bionic lazer thing (deal +1 Harm)
+"""
+
+class AChurchWithAView(Mystery):
+    def __init__(self, PC, enteringTown = '', investigationPrompt = '', goodInv = '', badInv = '', lesserHarm = 0, confrontationPrompt = '', monsterHarm = 0, monsterHealth = 0, victory = ''):
+        super().__init__(PC, enteringTown, investigationPrompt, goodInv, badInv, lesserHarm, confrontationPrompt, monsterHarm, monsterHealth, victory)
+        
+        self.enteringTown = '''
+On a humid Sunday morning, you trudge through southern Louisiana to find a worse-for-wear church sinking in the bayou. 
+Makeshift signs hanging from its rotten wood proclaim “Welcome Sinners!” and “REPENT.” 
+Gleaming, sparkling stained-glass windows decorate the squat building. 
+'''
+        
+        self.investigationPrompt = '''
+A man in his twilight years who seems to have stepped out of an era two or three centuries ago guards the door.
+He holds a Bible in one hand and passes out fliers with lines of hymns to a line of churchgoers filing in. 
+'''
+        
+        self.goodInv = """
+After the service, you speak to the preacher, Father Amhurst. You find he is a vicious, 
+venomous man, but vehemently denies any involvement in the stabbings. 
+He believes the visions in the stained glass of his congregation are a sign 
+that any harm that takes place within his church is punishment from the divine upon detestable sinners. 
+
+Amhurst proclaims that the stabbings were done by the angels in the windows.
+You notice now that the stained glass windows, depicting angry-looking creatures you'd describe as demons,
+are missing some of their shards. 
+"""
+
+        self.badInv = """
+Something you did during the sermon has angered the congregation. 
+They cease their worship and, as one, turn, stand, and scream at you. 
+Accusations and cries for confession alike strike your ears. 
+Before you can escape, Bibles, pews, and even the pulpit rise with the congregation 
+and lash against you. Take 3 Harm. 
+"""
+
+        self.lesserHarm = 3 
+        self.confrontationPrompt = """
+The stained glass windows burst, glass shards and fire pouring into the church. Father Amhurst flees with his flock. 
+The glass only scatters so far before it hovers in the air to depict demonic creatures, aflame and alight. 
+"""
+
+        self.monsterHarm = 5
+        self.monsterHealth = 8
+        self.victory = """
+By the time the battle is over, only sharp shards of glass and broken wooden boards remain. 
+In the aftermath, Father Amhurst is arrested as a suspect of the stabbings and dies 
+awaiting trial in the labyrinthian court system. No more stabbings are reported around the church, 
+and the media cycle rolls forward. Before what's left of St. George's sinks into the bayou, 
+you're able to return for a souvenir. 
+
+1. Take Father Amhurst's preaching attire. (gain +1 armor) 
+2. Take some of the scorched and shattered stained glass. (deal +1 Harm)
+"""
+
+class CreatureFeature(Mystery):
+    def __init__(self, PC, enteringTown = '', investigationPrompt = '', goodInv = '', badInv = '', lesserHarm = 0, confrontationPrompt = '', monsterHarm = 0, monsterHealth = 0, victory = ''):
+        super().__init__(PC, enteringTown, investigationPrompt, goodInv, badInv, lesserHarm, confrontationPrompt, monsterHarm, monsterHealth, victory)
+        
+        self.enteringTown = """
+The only real stop in this hot, cracked town is Serling's Diner, an atomic-era cafe --
+a perfect spot to chat with the locals. A few have recently become confused in the strange green fog 
+that surrounds Nimoy and had to turn back to town. It certainly seems thicker now that you're in town,
+and the air is heavy with humidity. 
+
+Everyone seems to have seen the meteor strikes, but only one person is actively studying them: 
+Alexandra Scott, an exogeologist of New Mexico Institute of Mining and Technology. 
+"""
+        
+        self.investigationPrompt = """
+You find the lab of Dr. Scott, setup next to Shatner's Hardware Store. 
+Strange, alien vegetation seems to be spilling forth from the laboratory. You make your way into Dr. Scott's lab. 
+"""
+        
+        self.goodInv = """
+She tells you matter-of-factly that the mist is spilling out of the bottom of a crater 
+at the edge of town where a red meteorite crash-landed. Scott has studied the “red matter” 
+and discovered that the crater is a transdimensional nexus to a swampy dimension. 
+The only way to close the portal to that dimension is to leave all of the red matter inside it. 
+
+You load up at Shatner's and reach out to grab the red meteorites. 
+"""
+
+        self.badInv = """
+She doesn't seem to be here at the moment. Surely you can handle this yourself. 
+You find a fragment of one of the red meteorites elevated between two forceps on a desk.
+You reach out to touch the stone. A massive, squirming tentacle emerges from the meteorite and pulls you closer. 
+Take 3 Harm. 
+"""
+
+        self.lesserHarm = 3 
+        self.confrontationPrompt = """
+As you contact the red meteorite, you find yourself knee-deep in a crimson swamp, 
+still clutching the otherworldly matter. Red water laps against you and thick, 
+green mist obscures your sight. In the meer, between you and a swirling portal, is a creature. 
+A giant eyeless toad with a mouth covered with constantly moving tentacles. It's a froghemoth!
+"""
+
+        self.monsterHarm = 3
+        self.monsterHealth = 15
+        self.victory = """
+The massive froghemoth falls with a loud plop. Another sound, like a cross between a cricket chirping and a roar,
+spreads over the swamp and sends ripples through the water. You drop the red meteorites in the swamp dimension 
+and head to the portal to leave. You have enough time to pull one thing through with you. 
+
+1. A patch of froghemoth hide (gain +1 armor) 
+2. A massive tooth floating in the swamp (deal +1 Harm)
 """
 
 def playMotW():
@@ -420,7 +528,6 @@ Don't worry, we'll get you a flak vest later.""")
 
 # OK, now we can finally actually play! 
     hunting = True
-    completedMysteries = [] # this will track which mysteries are completed so they can't be replayed. 
     while (hunting == True) and (playerHunter.harm < 7): # we gotta stop it somehow
         mainMenu = """
 Welcome back to base, Hunter! 
@@ -435,6 +542,13 @@ and worrisome nighttime attacks in the small town of Handfast.
 2. A college town has been suffering from a spate of burglaries of its labs. Complex medical devices and 
 primates have both been stolen. Now a security guard was torn to pieces a few days ago. 
 
+3. St. George's Church has garnered a reputation for its incendiary and hateful sermons. 
+The new attention has simply added to the fire. A couple of stabbings took place within, 
+and parishioners have begun to speak of visions of brimstone... 
+
+4. Venture to Nimoy, New Mexico to learn about accounts of recent bright-red meteor strikes 
+and morning fog tinted a strange green. 
+
 9. Check your gear. 
 
 0. Retire to safety. (Quit the game.)
@@ -442,10 +556,20 @@ primates have both been stolen. Now a security guard was torn to pieces a few da
         mainMenuChoice = input(mainMenu)
         if mainMenuChoice == '1':
             mystery = DreamAwayTheTime(playerHunter)
-            mystery.startingMessage()
+            print(mystery.enteringTown)
+            mystery.investigationStage()
         elif mainMenuChoice == '2':
             mystery = DamnDirtyApes(playerHunter)
-            mystery.startingMessage()
+            print(mystery.enteringTown)
+            mystery.investigationStage()
+        elif mainMenuChoice == '3':
+            mystery = AChurchWithAView(playerHunter)
+            print(mystery.enteringTown)
+            mystery.investigationStage()
+        elif mainMenuChoice == '4':
+            mystery = CreatureFeature(playerHunter)
+            print(mystery.enteringTown)
+            mystery.investigationStage()
         elif mainMenuChoice == '9':
             playerHunter.gearCheck()
         else:
