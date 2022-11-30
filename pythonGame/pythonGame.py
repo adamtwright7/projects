@@ -174,52 +174,48 @@ What would you like to do?
         3. Charge right into danger. 
         9 (or any other number). Check your gear. 
 """)
-
-        if startingChoice == "1":
+        # I'll do the charge into danger and gearchecks first so that the investigation options can share a lot of code without more 'if' statements 
+        if startingChoice == '3':
+            self.bigBattle()
+        elif (startingChoice != 1) and (startingChoice != 2):
+            self.PC.gearCheck()
+            self.investigationStage()
+        else: 
             print(self.investigationPrompt)
             firstDie = random.randint(1,6)
             secondDie = random.randint(1,6)
-            sharpResult = firstDie + secondDie + self.PC.ratings["Sharp"] 
 
-            print(f"""
-            You rolled {firstDie} + {secondDie} + your Sharp rating, {self.PC.ratings["Sharp"]}.
-            That's a total of {sharpResult}. 
-            """)
-            if sharpResult < 7:
-                print("Your investigation has been a failure.")
+            if startingChoice == "1": 
+                investigationResult = firstDie + secondDie + self.PC.ratings["Sharp"] 
+                print(f"""
+                You rolled {firstDie} + {secondDie} + your Sharp rating, {self.PC.ratings["Sharp"]}.
+                That's a total of {investigationResult}. 
+                """)
+
+            if startingChoice == "2":
+                investigationResult = firstDie + secondDie + self.PC.ratings["Charm"] 
+                print(f"""
+                You rolled {firstDie} + {secondDie} + your Charm rating, {self.PC.ratings["Charm"]}.
+                That's a total of {investigationResult}. 
+                """)
+
+            if investigationResult < 7: 
+                print("Your investigation was a failure.")
                 print(self.badInv)
                 self.PC.takeDamage(self.lesserHarm)
+            elif investigationResult < 10:
+                print("Your investigation was a mixed suceess. You learned some good info, but not much else.")
+                print(self.goodInv)
+            elif investigationResult < 12:
+                print("Your investigation was a good suceess. You learned some good info, and you get the jump on the monster. \n They've taken Harm as if you rolled an advanced success in battle.")
+                self.monsterHealth -= self.PC.attack
             else:
-                print("Your investigation has been a success.")
+                print("Your investigation was an advanced success! The Harm needed to take down the monster has been halved, rounded down.")
                 print(self.goodInv)
                 self.monsterHealth = int(self.monsterHealth/2)
             self.bigBattle()
 
-        elif startingChoice == "2":
-            print(self.investigationPrompt)
-            firstDie = random.randint(1,6)
-            secondDie = random.randint(1,6)
-            charmResult = firstDie + secondDie + self.PC.ratings["Charm"] 
-
-            print(f"""
-            You rolled {firstDie} + {secondDie} + your Charm rating, {self.PC.ratings["Charm"]}.
-            That's a total of {charmResult}. 
-            """)
-            if charmResult < 7:
-                print("Your investigation has been a failure.")
-                print(self.badInv)
-                self.PC.takeDamage(self.lesserHarm)
-            else:
-                print("Your investigation has been a success.")
-                print(self.goodInv)
-                self.monsterHealth = int(self.monsterHealth/2) # rounds down. I'm fine with that. 
-            self.bigBattle()
         
-        elif startingChoice == '3':
-            self.bigBattle()
-        else:
-            self.PC.gearCheck()
-            self.investigationStage()
     
     def bigBattle(self): # This handles the big battle between the player's Hunter and the titular Monster of the Week
         print(self.confrontationPrompt)
@@ -319,7 +315,7 @@ the king of faeries, in his timeless realm. He's brought a brutish creature, a R
 to steal away the town's favorite child per a centuries-old fey pact. 
 She tells you where Bonecruncher will next attack.
 
-You make preparations for the redcap's rage. His Harm capacity has been halved for the final showdown. Get ready."""
+You make preparations for the redcap's rage."""
 
         self.badInv = """
 You try to look into the dagger-clutching girl. She ducks into the woods as you follow. 
@@ -361,7 +357,7 @@ whose experiments with primates had to be stopped by his peers. Though he someho
 he hasn't been seen in a couple days, and reportedly didn't give his finals this year.
 Local legend is that he has a secret lab in the steam tunnels under campus. 
 
-You head into the steam tunnels, ready and equipped. The professor's harm capacity has been halved."""
+You head into the steam tunnels, ready and equipped."""
 
         self.badInv = """
 As you creep about one of the trashed labs, echoing monkey calls approach through the vents.
