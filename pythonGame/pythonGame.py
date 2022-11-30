@@ -33,7 +33,7 @@ but if the monster's dead, you'll be healed up and sent back to base.
 # I'll make the max for a rating 4, even though it's three in-game. 
     def ratingIncrease(self):
         print("Here are your current Ratings: \n",self.ratings)
-        ratingChoice = input("Enter the name of the Rating you'd like to increase.")
+        ratingChoice = input("Enter the name of the Rating you'd like to increase. \n")
 
         if ratingChoice.lower() == 'charm': 
             if self.ratings['Charm'] == 4:
@@ -66,7 +66,7 @@ but if the monster's dead, you'll be healed up and sent back to base.
             else:
                 self.ratings['Weird'] += 1
         else: 
-            print("Sorry, that's not a valid rating. Enter the name of the rating you'd like to increse, not any number. Case insensitive.")
+            print("Sorry, that's not a valid rating. Enter the name of the rating you'd like to increse, not a number. Case insensitive.")
             self.ratingIncrease() # re-runs the function if there's an error. 
     
 
@@ -553,8 +553,9 @@ Don't worry, we'll get you a flak vest later.""")
 Welcome back to base, Hunter! 
 Enter the number associated with the Mystery you'd like to investigate.
 Easiest Mysteries are listed first. You can investigate a Mystery twice, but it's less fun that way. 
-Enter 9 to check your gear. 
-If you'd like to retire your Hunter to safety, enter any other key or 0. 
+If you'd like to retire your Hunter to safety, enter 0. 
+Enter 9 or any other key to check your gear. 
+
 
 1. Investigate strange weather events, household inconveniences, 
 and worrisome nighttime attacks in the small town of Handfast. 
@@ -590,13 +591,13 @@ and morning fog tinted a strange green.
             mystery = CreatureFeature(playerHunter)
             print(mystery.enteringTown)
             mystery.investigationStage()
-        elif mainMenuChoice == '9':
-            playerHunter.gearCheck()
-        else:
+        elif mainMenuChoice == '0':
             print(f"""
 Congratulations, {playerHunter.name}. You've retired to safety. 
 And who knows? One day a young Hunter may need your expertise.""")
             hunting = False 
+        else:
+            playerHunter.gearCheck()
 
 playMotW()
 
