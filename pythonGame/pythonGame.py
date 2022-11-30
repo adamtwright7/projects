@@ -177,7 +177,7 @@ What would you like to do?
         # I'll do the charge into danger and gearchecks first so that the investigation options can share a lot of code without more 'if' statements 
         if startingChoice == '3':
             self.bigBattle()
-        elif (startingChoice != 1) and (startingChoice != 2):
+        elif (startingChoice != '1') and (startingChoice != '2'):
             self.PC.gearCheck()
             self.investigationStage()
         else: 
