@@ -36,15 +36,35 @@ but if the monster's dead, you'll be healed up and sent back to base.
         ratingChoice = input("Enter the name of the Rating you'd like to increase.")
 
         if ratingChoice.lower() == 'charm': 
-            self.ratings['Charm'] += 1
+            if self.ratings['Charm'] == 4:
+                print("That Rating is maxed out! Choose something else.")
+                self.ratingIncrease()
+            else:
+                self.ratings['Charm'] += 1
         elif ratingChoice.lower() == 'cool':
-            self.ratings['Cool'] += 1
+            if self.ratings['Cool'] == 4:
+                print("That Rating is maxed out! Choose something else.")
+                self.ratingIncrease()
+            else:
+                self.ratings['Cool'] += 1
         elif ratingChoice.lower() == 'sharp':
-            self.ratings['Sharp'] += 1
+            if self.ratings['Sharp'] == 4:
+                print("That Rating is maxed out! Choose something else.")
+                self.ratingIncrease()
+            else:
+                self.ratings['Sharp'] += 1
         elif ratingChoice.lower() == 'tough':
-            self.ratings['Tough'] += 1
+            if self.ratings['Tough'] == 4:
+                print("That Rating is maxed out! Choose something else.")
+                self.ratingIncrease()
+            else:
+                self.ratings['Tough'] += 1
         elif ratingChoice.lower() == 'weird':
-            self.ratings['Weird'] += 1
+            if self.ratings['Weird'] == 4:
+                print("That Rating is maxed out! Choose something else.")
+                self.ratingIncrease()
+            else:
+                self.ratings['Weird'] += 1
         else: 
             print("Sorry, that's not a valid rating. Enter the name of the rating you'd like to increse, not any number. Case insensitive.")
             self.ratingIncrease() # re-runs the function if there's an error. 
@@ -125,7 +145,7 @@ class Spooky(Hunter):
             'Cool':0,
             'Sharp':1,
             'Tough':-1,
-            'Weird':3
+            'Weird':2
         }
         self.description = "The Spooky: A purveyor of strange powers which aren't entirely under their control. The weirdest of the bunch."
 
@@ -274,7 +294,7 @@ You've also leveled up! You can increase one of your Ratings by 1.""")
 
 # the else-if statement here means that if you tie -- kill the monster but also die -- it counts as a win.         
         elif self.PC.harm >= 7: 
-            print(f"Sorry, {self.PC.name}. Other Hunters may arise in your stead...")
+            print(f"Sorry, {self.PC.name}. It's over. Other Hunters may arise in your stead...")
 
 # Mystery subclasses! These contain the flavortext and monster stats for different Mysteries. 
 

@@ -12,7 +12,7 @@ You're a Hunter investigating strange phenomenon in the modern world. After you 
 
 ### **Rolling.**
 
-It's an RPG, so you'll have to do a lot of stuff. Every roll is 2d6 + a Rating of your Hunter. 
+It's an RPG, so you'll have to do a lot of stuff. Every roll is 2d6 + a Rating of your Hunter. 7 or higher is usually a success; lower is a failure. 
 
 Your Hunter has 5 Ratings: Charm, Cool, Sharp, Tough, and Weird. The higher rating, the better. At the end of each Mystery, you get to increase one Rating by one. 
 
